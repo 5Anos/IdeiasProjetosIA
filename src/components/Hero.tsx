@@ -86,7 +86,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Main Artwork Card focused on teacher, students and robot */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100 border-4 border-white/90 bg-slate-100 aspect-[16/11] group">
                 <img
-                  src="/assets/aistudio/image_8082e7db.png"
+                  src="./assets/aistudio/image_8082e7db.png"
                   alt="Professora e alunos a trabalhar com IA em sala de aula com robô simpático e ideias criativas"
                   className="w-[185%] max-w-none -translate-x-[45%] -translate-y-[8%] transform transition-transform duration-700 group-hover:scale-[1.03]"
                 />
