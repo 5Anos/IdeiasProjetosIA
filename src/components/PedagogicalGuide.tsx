@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShieldCheck, Eye, Sparkles, BookOpen, ExternalLink, HeartHandshake, CheckCircle } from 'lucide-react';
+import { GENIALLY_BASE_URL } from '../data/activities';
 import { ToolIcon } from './ToolIcon';
 
 export const PedagogicalGuide: React.FC = () => {
@@ -45,10 +46,16 @@ export const PedagogicalGuide: React.FC = () => {
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white font-semibold text-xs border border-white/20">
-                <BookOpen className="w-4 h-4 text-amber-300" />
-                <span>Alinhado ao Perfil dos Alunos à Saída da Escolaridade Obrigatória</span>
-              </span>
+              <a
+                href={GENIALLY_BASE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-pink-500 hover:bg-pink-600 text-white font-bold text-xs sm:text-sm transition-all shadow-md"
+              >
+                <ToolIcon toolId="genially" size={18} />
+                <span>Ver Apresentação Original no Genially</span>
+                <ExternalLink className="w-4 h-4 ml-1" />
+              </a>
             </div>
           </div>
 
@@ -61,7 +68,7 @@ export const PedagogicalGuide: React.FC = () => {
         </div>
 
         {/* 4 Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {principles.map((item, index) => (
             <div
               key={index}
@@ -76,84 +83,6 @@ export const PedagogicalGuide: React.FC = () => {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Scientific Validation & Rigor Box */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-purple-200 shadow-md">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="w-10 h-10 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center text-xl">
-              🔬
-            </span>
-            <div>
-              <h3 className="text-xl sm:text-2xl font-bold text-slate-900 font-heading">
-                Validação Científica das Atividades
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium">
-                Confronto rigoroso com os factos da Biologia, Geologia, Matemática e História
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* Column 1: Ciências Naturais */}
-            <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-5 space-y-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-800 uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                Ciências Naturais & Terra
-              </span>
-              <ul className="text-xs text-slate-700 space-y-2 leading-relaxed">
-                <li>
-                  <strong className="text-emerald-950 font-bold">✓ Pistas Biológicas:</strong> Pinguins (*Spheniscidae*) têm penas impermeáveis e asas adaptadas ao mergulho no Hemisfério Sul; golfinhos respiram por espiráculo e comunicam por ecolocalização.
-                </li>
-                <li>
-                  <strong className="text-emerald-950 font-bold">✓ Extinção K-Pg:</strong> Há 66 milhões de anos, o impacto do asteroide de Chicxulub e o vulcanismo (*Deccan Traps*) extinguiram os dinossauros não-avianos. O *Triceratops* viveu exatamente nesse período.
-                </li>
-                <li>
-                  <strong className="text-emerald-950 font-bold">✓ Ciclo da Água e Clima:</strong> O aquecimento global intensifica a taxa de evaporação e a capacidade de retenção de vapor atmosférico (~7% por °C), agravando a seca no Sul de Portugal.
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 2: Matemática */}
-            <div className="bg-blue-50/60 border border-blue-100 rounded-2xl p-5 space-y-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-800 uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
-                Matemática & Geometria
-              </span>
-              <ul className="text-xs text-slate-700 space-y-2 leading-relaxed">
-                <li>
-                  <strong className="text-blue-950 font-bold">✓ Poliedros vs Corpos Redondos:</strong> Cubos e pirâmides são poliedros (faces poligonais planas, arestas e vértices). Cumprem o Teorema de Euler ($V - A + F = 2$).
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">✓ Correção de Rigor:</strong> Esferas e cilindros são *não-poliedros* delimitados por superfícies curvas; não têm faces poligonais nem vértices.
-                </li>
-                <li>
-                  <strong className="text-blue-950 font-bold">✓ Equações:</strong> A equação $4x + 12 = 60$ resulta em $x = 12$, adequada a contextos reais do dia a dia dos alunos.
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Limites & O que a IA Não Sabe */}
-            <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-5 space-y-3">
-              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-800 uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
-                Limites da IA & O que Não Sabemos
-              </span>
-              <ul className="text-xs text-slate-700 space-y-2 leading-relaxed">
-                <li>
-                  <strong className="text-amber-950 font-bold">⚠️ A IA Não "Pensa":</strong> Modela probabilidades estatísticas de palavras (tokens). Não possui memória consciente nem verificação científica infalível.
-                </li>
-                <li>
-                  <strong className="text-amber-950 font-bold">⚠️ Risco de Alucinação:</strong> Em dados históricos precisos ou contagens espaciais, a IA pode inventar detalhes convincentes que exigem confirmação em manuais escolares.
-                </li>
-                <li>
-                  <strong className="text-amber-950 font-bold">⚠️ Incerteza Científica:</strong> A velocidade exata de transição de ecossistemas paleoclimáticos e os limites de raciocínio de modelos neuronais autorregressivos continuam sob ativa investigação científica.
-                </li>
-              </ul>
-            </div>
-
-          </div>
         </div>
 
       </div>

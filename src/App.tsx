@@ -5,37 +5,53 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { ACTIVITIES } from './data/activities';
-import { Activity, DisciplineName } from './types';
-import { getDisciplineCounts } from './utils/filterActivities';
-import { Navbar, MainTabType } from './components/Navbar';
+import { TOOLS } from './data/tools';
+import { Activity, DisciplineName, EducationalCycle } from './types';
+import { filterActivities, getDisciplineCounts } from './utils/filterActivities';
+import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
-import { DisciplineProjectTabs } from './components/DisciplineProjectTabs';
+import { DisciplineCards } from './components/DisciplineCards';
+import { ActivityCard } from './components/ActivityCard';
+import { ActivityModal } from './components/ActivityModal';
+import { InteractiveLab } from './components/Lab/InteractiveLab';
 import { ToolsDirectory } from './components/ToolsDirectory';
 import { PedagogicalGuide } from './components/PedagogicalGuide';
-import { ScientificValidation } from './components/ScientificValidation';
 import { Footer } from './components/Footer';
 import { 
+  Search, 
+  Filter, 
+  Sparkles, 
+  Heart, 
+  RotateCcw, 
   BookOpen, 
-  Compass, 
-  Wrench, 
-  Microscope, 
-  Info, 
-  Sparkles,
-  Search
+  GraduationCap, 
+  Wrench,
+  CheckCircle,
+  Layers
 } from 'lucide-react';
 
+const CYCLES: (EducationalCycle | 'todos')[] = [
+  'todos',
+  '1.º Ciclo',
+  '2.º Ciclo',
+  '3.º Ciclo',
+  'Ensino Secundário',
+];
+
 export default function App() {
-  // Main Tab Navigation: Default is 'disciplinas' (by discipline with project name tabs)
-  const [activeMainTab, setActiveMainTab] = useState<MainTabType>('disciplinas');
-  
-  // Selected discipline
-  const [selectedDiscipline, setSelectedDiscipline] = useState<DisciplineName>('Português');
-  
-  // Discipline search query
+  const [activeTab, setActiveTab] = useState<string>('inicio');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  
-  // Favorites storage
+  const [selectedDiscipline, setSelectedDiscipline] = useState<DisciplineName | 'todas'>('todas');
+  const [selectedCycle, setSelectedCycle] = useState<EducationalCycle | 'todos'>('todos');
+  const [selectedToolId, setSelectedToolId] = useState<string>('todas');
+  const [favoritesOnly, setFavoritesOnly] = useState<boolean>(false);
   const [savedFavorites, setSavedFavorites] = useState<number[]>([]);
+  
+  // Modal state
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  
+  // Interactive Lab state
+  const [labDemoId, setLabDemoId] = useState<string>('guess_animal');
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -61,189 +77,299 @@ export default function App() {
     });
   };
 
+  // Filtered activities
+  const filteredActivities = useMemo(() => {
+    return filterActivities(ACTIVITIES, {
+      searchQuery,
+      selectedDiscipline,
+      selectedCycle,
+      selectedToolId,
+      favoritesOnly,
+      savedFavorites,
+    });
+  }, [searchQuery, selectedDiscipline, selectedCycle, selectedToolId, favoritesOnly, savedFavorites]);
+
   const disciplineCounts = useMemo(() => {
     return getDisciplineCounts(ACTIVITIES);
   }, []);
 
-  // List of disciplines with icons and styling
-  const disciplinesList: { name: DisciplineName; icon: string; count: number; colorBg: string; colorText: string; colorBorder: string }[] = [
-    { name: 'Português', icon: '📖', count: disciplineCounts['Português'] || 10, colorBg: 'bg-rose-50', colorText: 'text-rose-900', colorBorder: 'border-rose-200' },
-    { name: 'Matemática', icon: '∑', count: disciplineCounts['Matemática'] || 4, colorBg: 'bg-blue-50', colorText: 'text-blue-900', colorBorder: 'border-blue-200' },
-    { name: 'Ciências Naturais', icon: '🌿', count: disciplineCounts['Ciências Naturais'] || 4, colorBg: 'bg-emerald-50', colorText: 'text-emerald-900', colorBorder: 'border-emerald-200' },
-    { name: 'História', icon: '🏛️', count: disciplineCounts['História'] || 5, colorBg: 'bg-amber-50', colorText: 'text-amber-900', colorBorder: 'border-amber-200' },
-    { name: 'Educação Artística', icon: '🎨', count: disciplineCounts['Educação Artística'] || 5, colorBg: 'bg-purple-50', colorText: 'text-purple-900', colorBorder: 'border-purple-200' },
-    { name: 'TIC', icon: '💻', count: disciplineCounts['TIC'] || 2, colorBg: 'bg-cyan-50', colorText: 'text-cyan-900', colorBorder: 'border-cyan-200' },
-    { name: 'Cidadania', icon: '👥', count: disciplineCounts['Cidadania'] || 4, colorBg: 'bg-indigo-50', colorText: 'text-indigo-900', colorBorder: 'border-indigo-200' },
-    { name: 'Inglês', icon: '🌐', count: disciplineCounts['Inglês'] || 1, colorBg: 'bg-teal-50', colorText: 'text-teal-900', colorBorder: 'border-teal-200' },
-  ];
+  // Modal navigation
+  const currentIndex = selectedActivity
+    ? filteredActivities.findIndex((a) => a.id === selectedActivity.id)
+    : -1;
 
-  // If user searches for a discipline, automatically select it
-  const handleDisciplineSearch = (query: string) => {
-    setSearchQuery(query);
-    const cleanQ = query.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
-    if (!cleanQ) return;
-
-    const matched = disciplinesList.find(d => {
-      const cleanD = d.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-      if (cleanD.includes(cleanQ)) return true;
-      if (d.name === 'Ciências Naturais' && (cleanQ.includes('ciencia') || cleanQ.includes('estudo do meio') || cleanQ === 'cn')) return true;
-      if (d.name === 'Educação Artística' && (cleanQ.includes('arte') || cleanQ.includes('artistica') || cleanQ.includes('ev'))) return true;
-      if (d.name === 'Português' && (cleanQ.includes('portug') || cleanQ === 'pt')) return true;
-      if (d.name === 'Matemática' && (cleanQ.includes('matemat') || cleanQ === 'mat')) return true;
-      if (d.name === 'Cidadania' && cleanQ.includes('cidadan')) return true;
-      return false;
-    });
-
-    if (matched) {
-      setSelectedDiscipline(matched.name);
-      setActiveMainTab('disciplinas');
+  const handleNextActivity = () => {
+    if (currentIndex >= 0 && currentIndex < filteredActivities.length - 1) {
+      setSelectedActivity(filteredActivities[currentIndex + 1]);
     }
   };
+
+  const handlePrevActivity = () => {
+    if (currentIndex > 0) {
+      setSelectedActivity(filteredActivities[currentIndex - 1]);
+    }
+  };
+
+  const handleOpenLabWithDemo = (demoId: string) => {
+    setLabDemoId(demoId);
+    const labEl = document.getElementById('laboratorio');
+    if (labEl) {
+      labEl.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedDiscipline('todas');
+    setSelectedCycle('todos');
+    setSelectedToolId('todas');
+    setFavoritesOnly(false);
+  };
+
+  const scrollToActivities = () => {
+    const el = document.getElementById('atividades');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToDisciplines = () => {
+    const el = document.getElementById('disciplinas');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const scrollToLab = () => {
+    const el = document.getElementById('laboratorio');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const hasActiveFilters =
+    searchQuery.trim() !== '' ||
+    selectedDiscipline !== 'todas' ||
+    selectedCycle !== 'todos' ||
+    selectedToolId !== 'todas' ||
+    favoritesOnly;
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800">
       
-      {/* Top Navigation */}
+      {/* Top Navbar */}
       <Navbar
-        activeTab={activeMainTab}
-        setActiveTab={setActiveMainTab}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
         favoritesCount={savedFavorites.length}
         onOpenFavorites={() => {
-          setActiveMainTab('disciplinas');
+          setFavoritesOnly(true);
+          scrollToActivities();
         }}
         searchQuery={searchQuery}
-        setSearchQuery={handleDisciplineSearch}
+        setSearchQuery={(q) => {
+          setSearchQuery(q);
+          if (q.trim()) scrollToActivities();
+        }}
+        onSelectDiscipline={setSelectedDiscipline}
       />
 
-      {/* Main Tab Navigation Bar */}
-      <section className="bg-white border-b border-slate-200 shadow-2xs sticky top-20 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-start md:justify-center overflow-x-auto py-2.5 gap-2 no-scrollbar">
-            
-            <button
-              onClick={() => setActiveMainTab('disciplinas')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
-                activeMainTab === 'disciplinas' || activeMainTab === 'atividades'
-                  ? 'bg-purple-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Compass className="w-4 h-4" />
-              <span>Por Disciplina (Abas por Projeto)</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full ${
-                activeMainTab === 'disciplinas' || activeMainTab === 'atividades' 
-                  ? 'bg-purple-800 text-purple-100' 
-                  : 'bg-slate-200 text-slate-700'
-              }`}>
-                8 Disciplinas
-              </span>
-            </button>
+      <main className="flex-1">
+        {/* Hero Section matching attached mockup */}
+        <Hero
+          onExploreAll={scrollToActivities}
+          onExploreDisciplines={scrollToDisciplines}
+          onOpenLab={scrollToLab}
+        />
 
-            <button
-              onClick={() => setActiveMainTab('ferramentas')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
-                activeMainTab === 'ferramentas'
-                  ? 'bg-purple-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Wrench className="w-4 h-4" />
-              <span>Ferramentas de IA</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full ${
-                activeMainTab === 'ferramentas' ? 'bg-purple-800 text-purple-100' : 'bg-slate-200 text-slate-700'
-              }`}>
-                24
-              </span>
-            </button>
+        {/* Discipline Cards Bar matching mockup */}
+        <DisciplineCards
+          selectedDiscipline={selectedDiscipline}
+          onSelectDiscipline={setSelectedDiscipline}
+          disciplineCounts={disciplineCounts}
+        />
 
-            <button
-              onClick={() => setActiveMainTab('validacao')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
-                activeMainTab === 'validacao'
-                  ? 'bg-purple-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Microscope className="w-4 h-4" />
-              <span>Validação Científica & Rigor</span>
-            </button>
+        {/* Activities Section */}
+        <section id="atividades" className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+          
+          {/* Section Header & Search/Filters Controls */}
+          <div className="space-y-6 mb-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-700 mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Catálogo Curricular</span>
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-heading tracking-tight">
+                  20 Ideias de Atividades com IA
+                </h2>
+                <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                  Com prompts testados, dinâmica de sala de aula e ferramentas com hiperligações diretas
+                </p>
+              </div>
 
-            <button
-              onClick={() => setActiveMainTab('sobre')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all shrink-0 ${
-                activeMainTab === 'sobre'
-                  ? 'bg-purple-700 text-white shadow-sm'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Info className="w-4 h-4" />
-              <span>Sobre o Projeto & Ética</span>
-            </button>
+              {/* Counter Pill */}
+              <div className="flex items-center gap-2 self-start md:self-auto">
+                <span className="px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-800 text-xs font-bold">
+                  A mostrar {filteredActivities.length} de {ACTIVITIES.length} ideias
+                </span>
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-slate-600 hover:text-purple-700 bg-white border border-slate-200 px-3 py-1.5 rounded-full transition-colors"
+                    title="Limpar todos os filtros aplicados"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Limpar Filtros</span>
+                  </button>
+                )}
+              </div>
+            </div>
 
+            {/* Filter Toolbar Card */}
+            <div className="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-xs space-y-4">
+              
+              {/* Row 1: Search & Quick Toggles */}
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                
+                {/* Search Input */}
+                <div className="md:col-span-6 relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Pesquisar por tema (ex: animal, fábula, sólido, clima, música, robô)..."
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl pl-10 pr-4 py-2.5 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-hidden focus:border-purple-500 transition-colors"
+                  />
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-2.5 text-xs font-bold text-slate-400 hover:text-slate-600"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+
+                {/* Filter by Tool Dropdown */}
+                <div className="md:col-span-3">
+                  <div className="relative">
+                    <select
+                      value={selectedToolId}
+                      onChange={(e) => setSelectedToolId(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-3.5 py-2.5 text-xs sm:text-sm text-slate-800 font-medium focus:outline-hidden focus:border-purple-500 appearance-none cursor-pointer"
+                    >
+                      <option value="todas">Todas as Ferramentas</option>
+                      {Object.values(TOOLS).map((tool) => (
+                        <option key={tool.id} value={tool.id}>
+                          {tool.name}
+                        </option>
+                      ))}
+                    </select>
+                    <span className="absolute right-3.5 top-3 pointer-events-none text-slate-400 text-xs">
+                      ▼
+                    </span>
+                  </div>
+                </div>
+
+                {/* Favorites Toggle Button */}
+                <div className="md:col-span-3">
+                  <button
+                    onClick={() => setFavoritesOnly(!favoritesOnly)}
+                    className={`w-full py-2.5 px-4 rounded-2xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                      favoritesOnly
+                        ? 'bg-rose-600 text-white shadow-xs'
+                        : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                    }`}
+                  >
+                    <Heart className={`w-4 h-4 ${favoritesOnly ? 'fill-white' : 'fill-rose-400'}`} />
+                    <span>Apenas Favoritos ({savedFavorites.length})</span>
+                  </button>
+                </div>
+
+              </div>
+
+              {/* Row 2: Cycle Filter Pills */}
+              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+                <span className="text-xs font-bold text-slate-500 mr-1 flex items-center gap-1">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                  Ciclo de Ensino:
+                </span>
+                {CYCLES.map((cycle) => (
+                  <button
+                    key={cycle}
+                    onClick={() => setSelectedCycle(cycle)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                      selectedCycle === cycle
+                        ? 'bg-purple-700 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {cycle === 'todos' ? 'Todos os Ciclos' : cycle}
+                  </button>
+                ))}
+              </div>
+
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Main Content Area */}
-      <main className="flex-1 py-8 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        
-        {/* ======================================================== */}
-        {/* VISTA PRINCIPAL: POR DISCIPLINA & ABAS POR NOME DE PROJETO */}
-        {/* ======================================================== */}
-        {(activeMainTab === 'disciplinas' || activeMainTab === 'atividades') && (
-          <DisciplineProjectTabs
-            disciplines={disciplinesList}
-            selectedDiscipline={selectedDiscipline}
-            onSelectDiscipline={setSelectedDiscipline}
-            activities={ACTIVITIES}
-            savedFavorites={savedFavorites}
-            onToggleFavorite={toggleFavorite}
-            searchDisciplineQuery={searchQuery}
-          />
-        )}
+          {/* Activities Grid */}
+          {filteredActivities.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredActivities.map((activity) => (
+                <ActivityCard
+                  key={activity.id}
+                  activity={activity}
+                  isFavorite={savedFavorites.includes(activity.id)}
+                  onToggleFavorite={toggleFavorite}
+                  onOpenDetails={(act) => setSelectedActivity(act)}
+                  onOpenLabDemo={handleOpenLabWithDemo}
+                />
+              ))}
+            </div>
+          ) : (
+            /* Empty State */
+            <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 shadow-xs">
+              <span className="text-5xl block mb-3">🔍</span>
+              <h3 className="text-lg font-bold text-slate-900 font-heading mb-1">
+                Nenhuma atividade encontrada com estes filtros
+              </h3>
+              <p className="text-sm text-slate-500 max-w-md mx-auto mb-5">
+                Tenta pesquisar por outro termo ou limpa os filtros ativos para veres todas as 20 atividades.
+              </p>
+              <button
+                onClick={handleResetFilters}
+                className="px-5 py-2.5 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-xs"
+              >
+                Repor Todos os Filtros
+              </button>
+            </div>
+          )}
 
-        {/* ======================================================== */}
-        {/* VISTA: FERRAMENTAS DE IA                                  */}
-        {/* ======================================================== */}
-        {activeMainTab === 'ferramentas' && (
-          <div className="animate-in fade-in duration-200">
-            <ToolsDirectory
-              onSelectToolForFilter={(tId) => {
-                // Find discipline containing this tool
-                const act = ACTIVITIES.find(a => a.toolIds.includes(tId));
-                if (act) {
-                  setSelectedDiscipline(act.disciplines[0]);
-                }
-                setActiveMainTab('disciplinas');
-              }}
-            />
-          </div>
-        )}
+        </section>
 
-        {/* ======================================================== */}
-        {/* VISTA: VALIDAÇÃO CIENTÍFICA & RIGOR                      */}
-        {/* ======================================================== */}
-        {activeMainTab === 'validacao' && (
-          <ScientificValidation />
-        )}
+        {/* Interactive Lab Section */}
+        <InteractiveLab initialTab={labDemoId} />
 
-        {/* ======================================================== */}
-        {/* VISTA: SOBRE O PROJETO & ÉTICA                           */}
-        {/* ======================================================== */}
-        {activeMainTab === 'sobre' && (
-          <div className="animate-in fade-in duration-200">
-            <PedagogicalGuide />
-          </div>
-        )}
+        {/* Tools Directory Section with all 24 tools, logos and hyperlinks */}
+        <ToolsDirectory
+          onSelectToolForFilter={(tId) => {
+            setSelectedToolId(tId);
+            scrollToActivities();
+          }}
+        />
 
+        {/* Pedagogical Guide & Ethics */}
+        <PedagogicalGuide />
       </main>
 
       {/* Footer */}
-      <Footer
-        onScrollToTop={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        setActiveTab={(tab) => {
-          setActiveMainTab(tab);
-        }}
+      <Footer onScrollToTop={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
+
+      {/* Activity Details Modal */}
+      <ActivityModal
+        activity={selectedActivity}
+        onClose={() => setSelectedActivity(null)}
+        onNext={currentIndex < filteredActivities.length - 1 ? handleNextActivity : undefined}
+        onPrev={currentIndex > 0 ? handlePrevActivity : undefined}
+        isFavorite={selectedActivity ? savedFavorites.includes(selectedActivity.id) : false}
+        onToggleFavorite={toggleFavorite}
+        onOpenLabDemo={handleOpenLabWithDemo}
       />
 
     </div>

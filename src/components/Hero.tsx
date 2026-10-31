@@ -4,11 +4,13 @@ import { ArrowRight, Sparkles, BookOpen, Compass, Lightbulb, Play } from 'lucide
 interface HeroProps {
   onExploreAll: () => void;
   onExploreDisciplines: () => void;
+  onOpenLab: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onExploreAll,
   onExploreDisciplines,
+  onOpenLab,
 }) => {
   return (
     <section className="relative overflow-hidden pt-6 pb-12 md:py-14 bg-gradient-to-b from-white via-indigo-50/20 to-slate-50">
@@ -49,7 +51,7 @@ export const Hero: React.FC<HeroProps> = ({
                 onClick={onExploreAll}
                 className="group inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-purple-700 text-white font-bold text-sm sm:text-base hover:bg-purple-800 active:scale-95 transition-all shadow-md shadow-purple-200"
               >
-                <span>Ver atividades por disciplina</span>
+                <span>Ver todas as ideias</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
 
@@ -58,7 +60,16 @@ export const Hero: React.FC<HeroProps> = ({
                 className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm sm:text-base border border-slate-200/90 hover:border-slate-300 transition-all shadow-xs"
               >
                 <Compass className="w-4 h-4 text-slate-500" />
-                <span>Explorar disciplinas</span>
+                <span>Explorar por disciplina</span>
+              </button>
+
+              <button
+                onClick={onOpenLab}
+                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-sm border border-amber-200 transition-all"
+                title="Experimentar simuladores interativos"
+              >
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span>Testar no Laboratório</span>
               </button>
             </div>
 
@@ -86,7 +97,7 @@ export const Hero: React.FC<HeroProps> = ({
               {/* Main Artwork Card focused on teacher, students and robot */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-100 border-4 border-white/90 bg-slate-100 aspect-[16/11] group">
                 <img
-                  src="./assets/aistudio/image_8082e7db.png"
+                  src="/assets/aistudio/image_8082e7db.png"
                   alt="Professora e alunos a trabalhar com IA em sala de aula com robô simpático e ideias criativas"
                   className="w-[185%] max-w-none -translate-x-[45%] -translate-y-[8%] transform transition-transform duration-700 group-hover:scale-[1.03]"
                 />

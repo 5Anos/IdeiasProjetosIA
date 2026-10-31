@@ -47,43 +47,27 @@ export function filterActivities(
       }
     }
 
-    // Search query check: STRICTLY by discipline as requested
+    // Search query check
     if (query) {
-      const cleanQuery = query
-        .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '')
-        .trim();
+      const matchTitle = act.title.toLowerCase().includes(query);
+      const matchIdea = act.idea.toLowerCase().includes(query);
+      const matchPrompt = act.promptSuggestion.toLowerCase().includes(query);
+      const matchGrade = act.gradeText.toLowerCase().includes(query);
+      const matchDisciplines = act.disciplines.some(d => d.toLowerCase().includes(query));
+      const matchTags = act.tags.some(t => t.toLowerCase().includes(query));
+      const matchResult = act.result.toLowerCase().includes(query);
+      const matchTools = act.rawToolsText.toLowerCase().includes(query);
 
-      const matchDiscipline = act.disciplines.some((d) => {
-        const cleanD = d
-          .normalize('NFD')
-          .replace(/[\u0300-\u036f]/g, '')
-          .toLowerCase();
-
-        // Exact or substring match within the discipline name
-        if (cleanD.includes(cleanQuery)) return true;
-
-        // Common educational synonyms
-        if (d === 'Ciências Naturais' && (cleanQuery.includes('ciencia') || cleanQuery.includes('estudo do meio') || cleanQuery === 'cn')) {
-          return true;
-        }
-        if (d === 'Educação Artística' && (cleanQuery.includes('arte') || cleanQuery.includes('artistica') || cleanQuery.includes('ev') || cleanQuery.includes('et'))) {
-          return true;
-        }
-        if (d === 'Cidadania' && cleanQuery.includes('cidadan')) {
-          return true;
-        }
-        if (d === 'Português' && (cleanQuery.includes('portug') || cleanQuery === 'pt')) {
-          return true;
-        }
-        if (d === 'Matemática' && (cleanQuery.includes('matemat') || cleanQuery === 'mat')) {
-          return true;
-        }
-
-        return false;
-      });
-
-      if (!matchDiscipline) {
+      if (
+        !matchTitle &&
+        !matchIdea &&
+        !matchPrompt &&
+        !matchGrade &&
+        !matchDisciplines &&
+        !matchTags &&
+        !matchResult &&
+        !matchTools
+      ) {
         return false;
       }
     }
