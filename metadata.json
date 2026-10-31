@@ -1,0 +1,6 @@
+{
+  "name": "IA na Educação - Ideias que Inspiram",
+  "description": "20 ideias pedagógicas interativas para integrar a Inteligência Artificial na sala de aula, do 1.º Ciclo ao Ensino Secundário.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
