@@ -4,13 +4,11 @@ import { ArrowRight, Sparkles, BookOpen, Compass, Lightbulb, Play } from 'lucide
 interface HeroProps {
   onExploreAll: () => void;
   onExploreDisciplines: () => void;
-  onOpenLab: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
   onExploreAll,
   onExploreDisciplines,
-  onOpenLab,
 }) => {
   return (
     <section className="relative overflow-hidden pt-6 pb-12 md:py-14 bg-gradient-to-b from-white via-indigo-50/20 to-slate-50">
@@ -61,15 +59,6 @@ export const Hero: React.FC<HeroProps> = ({
               >
                 <Compass className="w-4 h-4 text-slate-500" />
                 <span>Explorar por disciplina</span>
-              </button>
-
-              <button
-                onClick={onOpenLab}
-                className="inline-flex items-center gap-2 px-4 py-3.5 rounded-full bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold text-sm border border-amber-200 transition-all"
-                title="Experimentar simuladores interativos"
-              >
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <span>Testar no Laboratório</span>
               </button>
             </div>
 

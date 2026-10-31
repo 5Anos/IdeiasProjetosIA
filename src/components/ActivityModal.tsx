@@ -26,7 +26,6 @@ interface ActivityModalProps {
   onPrev?: () => void;
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
-  onOpenLabDemo?: (demoId: string) => void;
 }
 
 export const ActivityModal: React.FC<ActivityModalProps> = ({
@@ -36,7 +35,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
   onPrev,
   isFavorite,
   onToggleFavorite,
-  onOpenLabDemo,
 }) => {
   const [copied, setCopied] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -307,25 +305,6 @@ export const ActivityModal: React.FC<ActivityModalProps> = ({
               </a>
             </div>
           </div>
-
-          {/* Lab Demo CTA if exists */}
-          {activity.interactiveDemoId && onOpenLabDemo && (
-            <div className="rounded-2xl p-4 bg-amber-50/80 border border-amber-200 flex items-center justify-between gap-3">
-              <div>
-                <p className="font-bold text-amber-900 text-sm">Esta atividade tem um simulador interativo!</p>
-                <p className="text-xs text-amber-700">Experimenta esta dinâmica diretamente no nosso laboratório escolar.</p>
-              </div>
-              <button
-                onClick={() => {
-                  onClose();
-                  onOpenLabDemo(activity.interactiveDemoId!);
-                }}
-                className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-colors shrink-0"
-              >
-                Abrir Simulador 🚀
-              </button>
-            </div>
-          )}
 
         </div>
 

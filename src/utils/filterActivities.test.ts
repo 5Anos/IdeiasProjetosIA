@@ -13,8 +13,8 @@ test('activities dataset has exactly 20 items with sequential ids', () => {
     assert.ok(activity.idea.length > 20, `Activity ${activity.id} must have an idea`);
     assert.ok(activity.result.length > 5, `Activity ${activity.id} must have a result`);
     assert.ok(activity.promptSuggestion.length > 5, `Activity ${activity.id} must have a prompt`);
-    assert.ok(activity.teacherTip.length > 5, `Activity ${activity.id} must have a teacher tip`);
-    assert.ok(activity.geniallyUrl.startsWith('https://'), `Activity ${activity.id} must have a valid Genially URL`);
+    assert.ok(activity.duration && activity.duration.length > 2, `Activity ${activity.id} must have duration`);
+    assert.ok(activity.assessmentCriteria, `Activity ${activity.id} must have assessmentCriteria`);
   });
 });
 
@@ -29,14 +29,22 @@ test('every tool referenced in activities exists in the tools catalogue', () => 
   });
 });
 
-test('filterActivities correctly filters by search term', () => {
-  const animalResults = filterActivities(ACTIVITIES, { searchQuery: 'animal' });
-  assert.ok(animalResults.length >= 1);
-  assert.ok(animalResults.some(a => a.id === 2));
+test('filterActivities search query operates strictly by discipline', () => {
+  // Searching a discipline returns its activities
+  const mathResults = filterActivities(ACTIVITIES, { searchQuery: 'Matemática' });
+  assert.equal(mathResults.length, 4);
+  mathResults.forEach(a => assert.ok(a.disciplines.includes('Matemática')));
 
-  const mathResults = filterActivities(ACTIVITIES, { searchQuery: 'equação' });
-  assert.ok(mathResults.length >= 1);
-  assert.ok(mathResults.some(a => a.id === 12));
+  const portResults = filterActivities(ACTIVITIES, { searchQuery: 'Português' });
+  assert.ok(portResults.length >= 5);
+  portResults.forEach(a => assert.ok(a.disciplines.includes('Português')));
+
+  // Non-discipline terms (such as 'chocolate' or 'peixe') do NOT match when searching strictly by discipline
+  const nonDisciplineResults = filterActivities(ACTIVITIES, { searchQuery: 'chocolate' });
+  assert.equal(nonDisciplineResults.length, 0);
+
+  const animalNonDiscipline = filterActivities(ACTIVITIES, { searchQuery: 'peixe' });
+  assert.equal(animalNonDiscipline.length, 0);
 });
 
 test('filterActivities correctly filters by discipline and cycle', () => {

@@ -55,9 +55,6 @@ export const Footer: React.FC<FooterProps> = ({ onScrollToTop }) => {
                 <a href="#disciplinas" className="hover:text-white transition-colors">Explorar por Disciplina</a>
               </li>
               <li>
-                <a href="#laboratorio" className="hover:text-white transition-colors">Laboratório Interativo</a>
-              </li>
-              <li>
                 <a href="#ferramentas" className="hover:text-white transition-colors">Catálogo de Ferramentas</a>
               </li>
               <li>

@@ -35,8 +35,19 @@ export interface Activity {
   rawToolsText: string;
   promptSuggestion: string;
   teacherTip: string;
-  geniallyUrl: string;
+  geniallyUrl?: string;
   tags: string[];
+  duration?: string;
+  grouping?: string;
+  assessmentCriteria?: {
+    criticalThinking: string;
+    authorship: string;
+    ethics: string;
+  };
+  differentiation?: {
+    support: string;
+    extension: string;
+  };
   interactiveDemoId?: 'draw_imagine' | 'guess_animal' | 'sound_world' | 'geometry_shapes' | 'fable_choice' | 'prompt_helper';
 }
 

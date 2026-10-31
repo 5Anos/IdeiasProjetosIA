@@ -13,7 +13,6 @@ import { Hero } from './components/Hero';
 import { DisciplineCards } from './components/DisciplineCards';
 import { ActivityCard } from './components/ActivityCard';
 import { ActivityModal } from './components/ActivityModal';
-import { InteractiveLab } from './components/Lab/InteractiveLab';
 import { ToolsDirectory } from './components/ToolsDirectory';
 import { PedagogicalGuide } from './components/PedagogicalGuide';
 import { Footer } from './components/Footer';
@@ -49,9 +48,6 @@ export default function App() {
   
   // Modal state
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
-  
-  // Interactive Lab state
-  const [labDemoId, setLabDemoId] = useState<string>('guess_animal');
 
   // Load favorites from localStorage
   useEffect(() => {
@@ -110,14 +106,6 @@ export default function App() {
     }
   };
 
-  const handleOpenLabWithDemo = (demoId: string) => {
-    setLabDemoId(demoId);
-    const labEl = document.getElementById('laboratorio');
-    if (labEl) {
-      labEl.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedDiscipline('todas');
@@ -133,11 +121,6 @@ export default function App() {
 
   const scrollToDisciplines = () => {
     const el = document.getElementById('disciplinas');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const scrollToLab = () => {
-    const el = document.getElementById('laboratorio');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -173,7 +156,6 @@ export default function App() {
         <Hero
           onExploreAll={scrollToActivities}
           onExploreDisciplines={scrollToDisciplines}
-          onOpenLab={scrollToLab}
         />
 
         {/* Discipline Cards Bar matching mockup */}
@@ -318,7 +300,6 @@ export default function App() {
                   isFavorite={savedFavorites.includes(activity.id)}
                   onToggleFavorite={toggleFavorite}
                   onOpenDetails={(act) => setSelectedActivity(act)}
-                  onOpenLabDemo={handleOpenLabWithDemo}
                 />
               ))}
             </div>
@@ -343,9 +324,6 @@ export default function App() {
 
         </section>
 
-        {/* Interactive Lab Section */}
-        <InteractiveLab initialTab={labDemoId} />
-
         {/* Tools Directory Section with all 24 tools, logos and hyperlinks */}
         <ToolsDirectory
           onSelectToolForFilter={(tId) => {
@@ -369,7 +347,6 @@ export default function App() {
         onPrev={currentIndex > 0 ? handlePrevActivity : undefined}
         isFavorite={selectedActivity ? savedFavorites.includes(selectedActivity.id) : false}
         onToggleFavorite={toggleFavorite}
-        onOpenLabDemo={handleOpenLabWithDemo}
       />
 
     </div>

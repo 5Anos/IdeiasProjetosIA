@@ -11,8 +11,7 @@ import {
   Lightbulb, 
   ChevronRight, 
   GraduationCap, 
-  BookMarked,
-  Play
+  BookMarked
 } from 'lucide-react';
 
 interface ActivityCardProps {
@@ -20,7 +19,6 @@ interface ActivityCardProps {
   isFavorite: boolean;
   onToggleFavorite: (id: number) => void;
   onOpenDetails: (activity: Activity) => void;
-  onOpenLabDemo?: (demoId: string) => void;
 }
 
 export const ActivityCard: React.FC<ActivityCardProps> = ({
@@ -28,7 +26,6 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
   isFavorite,
   onToggleFavorite,
   onOpenDetails,
-  onOpenLabDemo,
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -176,23 +173,10 @@ export const ActivityCard: React.FC<ActivityCardProps> = ({
 
       {/* Bottom Actions */}
       <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-        {activity.interactiveDemoId && onOpenLabDemo ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenLabDemo(activity.interactiveDemoId!);
-            }}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold text-xs transition-colors"
-          >
-            <Play className="w-3 h-3 fill-amber-700" />
-            <span>Testar no Lab</span>
-          </button>
-        ) : (
-          <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
-            <BookMarked className="w-3.5 h-3.5" />
-            Ficha Pedagógica
-          </span>
-        )}
+        <span className="text-[11px] text-slate-400 font-medium flex items-center gap-1">
+          <BookMarked className="w-3.5 h-3.5" />
+          Ficha Pedagógica
+        </span>
 
         <button
           onClick={() => onOpenDetails(activity)}
